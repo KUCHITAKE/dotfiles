@@ -28,7 +28,7 @@ install_zsh() {
 
 install_zinit() {
   echo "Installing Zinit..."
-  bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+  yes N | bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 }
 
 link_zsh_config() {
