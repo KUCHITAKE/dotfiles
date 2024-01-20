@@ -28,16 +28,12 @@ install_zsh() {
 
 install_zinit() {
   echo "Installing Zinit..."
+  # Using 'yes' to automatically reply 'N' to any y/N prompts
   yes N | bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 }
 
 link_zsh_config() {
-  echo "Backing up existing zsh configuration..."
-  if [ ! -d "$HOME/.dotbackup" ]; then
-    echo "$HOME/.dotbackup not found. Creating it..."
-    mkdir "$HOME/.dotbackup"
-  fi
-
+  echo "Linking Zsh configuration..."
   local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
   local repo_zsh_config="$script_dir/.config/zsh"
 
@@ -51,11 +47,23 @@ link_zsh_config() {
   fi
 
   if [ -e "$HOME/.config/zsh" ]; then
+    mkdir -p "$HOME/.dotbackup"
     mv "$HOME/.config/zsh" "$HOME/.dotbackup"
   fi
 
   mkdir -p "$HOME/.config"
   ln -snf $repo_zsh_config "$HOME/.config/zsh"
+
+  # Linking ~/.config/zsh/.zshenv to ~/.zshenv
+  if [ -f "$repo_zsh_config/.zshenv" ]; then
+    if [ -L "$HOME/.zshenv" ]; then
+      rm -f "$HOME/.zshenv"
+    fi
+    if [ -e "$HOME/.zshenv" ]; then
+      mv "$HOME/.zshenv" "$HOME/.dotbackup"
+    fi
+    ln -s "$repo_zsh_config/.zshenv" "$HOME/.zshenv"
+  fi
 }
 
 while [ $# -gt 0 ]; do
@@ -76,4 +84,4 @@ done
 install_zsh
 install_zinit
 link_zsh_config
-echo -e "\e[1;36m Zsh configuration linked! \e[m"
+echo -e "\e[1;36m Zsh setup completed! \e[m"
