@@ -33,22 +33,6 @@ install_zinit() {
   yes N | bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 }
 
-link_zsh_config() {
-  link_config_files ".config/zsh" "$script_dir/.config/zsh"
-}
-
-link_tmux_config() {
-  link_config_files ".config/tmux" "$script_dir/.config/tmux"
-}
-
-link_nvim_config() {
-  link_config_files ".config/nvim" "$script_dir/.config/nvim"
-}
-
-link_alacritty_config() {
-  link_config_files ".config/alacritty" "$script_dir/.config/alacritty"
-}
-
 link_config_files() {
   local target_dir="$1"
   local repo_dir="$2"
@@ -90,9 +74,5 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 install_zsh
 install_zinit
 link_config_files ".config" "$script_dir/.config"
-# link_zsh_config
-# link_tmux_config
-# link_nvim_config
-# link_alacritty_config
 
 echo -e "\e[1;36m Zsh setup completed! \e[m"
