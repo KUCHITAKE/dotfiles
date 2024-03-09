@@ -37,5 +37,13 @@ zi light ajeetdsouza/zoxide
 zi ice has'zoxide'
 zi light z-shell/zsh-zoxide
 
+if  [[ -d $HOME/.rd ]]; then
+  export PATH="$HOME/.rd/bin:$PATH"
+fi
+
+if [[ -d $HOMEBREW_PREFIX/opt/asdf ]]; then
+  . $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh
+fi
+
 # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
 [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh

@@ -1,0 +1,12 @@
+import = ["~/.config/alacritty/themes/themes/blood_moon.toml"]
+
+[shell]
+program = "/bin/zsh"
+args = ['-l', '-c', 'tmux a -t 0 || tmux']
+
+[window]
+decorations = "Buttonless"
+startup_mode = "SimpleFullscreen"
+
+[font]
+normal = { family = "0xProto Nerd Font", style = "Regular" }

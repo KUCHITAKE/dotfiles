@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -ue
 
 helpmsg() {
@@ -9,7 +10,7 @@ helpmsg() {
 install_zsh() {
   if [[ "$OSTYPE" == "darwin"* ]]; then
     # For macOS
-    if ! command -v brew &> /dev/null; then
+    if ! command -v brew &>/dev/null; then
       echo "Installing Homebrew..."
       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
@@ -33,55 +34,65 @@ install_zinit() {
 }
 
 link_zsh_config() {
-  echo "Linking Zsh configuration..."
-  local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-  local repo_zsh_config="$script_dir/.config/zsh"
+  link_config_files ".config/zsh" "$script_dir/.config/zsh"
+}
 
-  if [ ! -d "$repo_zsh_config" ]; then
-    echo "Zsh config directory $repo_zsh_config does not exist in the repository."
-    exit 1
+link_tmux_config() {
+  link_config_files ".config/tmux" "$script_dir/.config/tmux"
+}
+
+link_nvim_config() {
+  link_config_files ".config/nvim" "$script_dir/.config/nvim"
+}
+
+link_alacritty_config() {
+  link_config_files ".config/alacritty" "$script_dir/.config/alacritty"
+}
+
+link_config_files() {
+  local target_dir="$1"
+  local repo_dir="$2"
+
+  if [ ! -d "$repo_dir" ]; then
+    echo "Config directory $repo_dir does not exist in the repository."
+    return 1
   fi
 
-  if [ -L "$HOME/.config/zsh" ]; then
-    rm -f "$HOME/.config/zsh"
-  fi
-
-  if [ -e "$HOME/.config/zsh" ]; then
-    mkdir -p "$HOME/.dotbackup"
-    mv "$HOME/.config/zsh" "$HOME/.dotbackup"
-  fi
-
-  mkdir -p "$HOME/.config"
-  ln -snf $repo_zsh_config "$HOME/.config/zsh"
-
-  # Linking ~/.config/zsh/.zshenv to ~/.zshenv
-  if [ -f "$repo_zsh_config/.zshenv" ]; then
-    if [ -L "$HOME/.zshenv" ]; then
-      rm -f "$HOME/.zshenv"
+  find "$repo_dir/" -mindepth 1 -maxdepth 1 | while read entry; do
+    entry_name=$(basename "$entry")
+    if [ -d "$entry" ]; then
+      echo "Copying directory $entry_name..."
+      cp -r "$entry" "$HOME/$target_dir/$entry_name"
+      link_config_files "$target_dir/$entry_name" "$entry"
+    elif [ -f "$entry" ]; then
+      echo "Linking file $entry_name..."
+      ln -snf "$entry" "$HOME/$target_dir/$entry_name"
     fi
-    if [ -e "$HOME/.zshenv" ]; then
-      mv "$HOME/.zshenv" "$HOME/.dotbackup"
-    fi
-    ln -s "$repo_zsh_config/.zshenv" "$HOME/.zshenv"
-  fi
+  done
 }
 
 while [ $# -gt 0 ]; do
   case ${1} in
-    --debug|-d)
-      set -uex
-      ;;
-    --help|-h)
-      helpmsg
-      exit 1
-      ;;
-    *)
-      ;;
+  --debug | -d)
+    set -uex
+    ;;
+  --help | -h)
+    helpmsg
+    exit 1
+    ;;
+  *) ;;
   esac
   shift
 done
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+
 install_zsh
 install_zinit
-link_zsh_config
+link_config_files ".config" "$script_dir/.config"
+# link_zsh_config
+# link_tmux_config
+# link_nvim_config
+# link_alacritty_config
+
 echo -e "\e[1;36m Zsh setup completed! \e[m"
