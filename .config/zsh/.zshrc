@@ -45,5 +45,13 @@ if [[ -d $HOMEBREW_PREFIX/opt/asdf ]]; then
   . $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh
 fi
 
+if [[ -d $HOME/.asdf ]]; then
+  . $HOME/.asdf/asdf.sh
+fi
+
+if [[ -d $HOME/.cargo ]]; then
+  . $HOME/.cargo/env
+fi
+
 # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
 [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
